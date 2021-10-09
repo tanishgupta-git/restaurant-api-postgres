@@ -1,13 +1,12 @@
 {
-  "name": "crm-api",
+  "name": "restaurant-api",
   "version": "1.0.0",
-  "description": "crm api in nodejs and postgresql",
+  "description": "restaurant api in nodejs and postgresql",
   "main": "app.js",
   "scripts": {
-    "start:build": "tsc -w",
-    "start:run": "nodemon ./build/app.js",
-    "start": "concurrently npm:start:*",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node ./build/app.js",
+    "dev": "nodemon -L ./src/app.ts",
+    "build": "tsc -p ."
   },
   "author": "",
   "license": "ISC",
