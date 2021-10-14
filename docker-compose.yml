@@ -6,7 +6,8 @@ services:
       - "5000:5000"
     env_file:
       - ./.env
-  
+    depends_on:
+      - postgres
   postgres:
     image: postgres:13.3-alpine
     env_file:
@@ -15,6 +16,5 @@ services:
       - "5432:5432"
     volumes: 
       - pgdata:/var/lib/postgresql/data
-      - ./user.sql:/docker-entrypoint-initdb.d/user.sql
 volumes:
   pgdata:

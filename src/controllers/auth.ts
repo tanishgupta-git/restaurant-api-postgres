@@ -3,11 +3,12 @@ import { poolDB } from '../db/connection';
 
 
 export const login = (req:Request,res:Response,next:NextFunction) => {
-    poolDB.query('INSERT INTO users (name, email) VALUES ($1, $2)', ['maggi', 'maggi@gmail.com'], (error, result) => {
+    poolDB.query('SELECT * FROM resuser', (error, result) => {
         if (error) {
           throw error
         }
-        res.status(201).send(`User added with ID`)
+        console.log(result)
+        res.status(201).json(result);
       })
-    res.send("Hii i am in login");
+  
 } 
