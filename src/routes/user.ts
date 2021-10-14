@@ -1,8 +1,8 @@
 import express from "express";
-import { userLogin } from '../controllers/auth';
+import { getDishes } from "../controllers/user";
 
 const router = express.Router();
 
-router.get('/user/login',userLogin);
+router.get('/getDishes',getDishes);
 
 export default router;

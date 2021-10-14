@@ -2,13 +2,16 @@ import { Request,Response,NextFunction } from 'express';
 import { poolDB } from '../db/connection';
 
 
-export const login = (req:Request,res:Response,next:NextFunction) => {
-    poolDB.query('SELECT * FROM resuser', (error, result) => {
-        if (error) {
-          throw error
-        }
-        console.log(result)
-        res.status(201).json(result);
-      })
+export const userLogin = async (req:Request,res:Response,next:NextFunction) => {
+   let respon; 
+  try 
+    {
+    respon = await poolDB.query('SELECT * FROM resuser')
+    res.json(respon.rows);
+    }
+    catch(e) {
+      res.send("Error in getting users")
+      console.log(e);
+    }
   
 } 
