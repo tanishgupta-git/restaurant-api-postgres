@@ -5,6 +5,7 @@ import UserRoutes from './routes/user';
 const app : Application = express();
 const PORT = process.env.PORT || 5000;
 
+app.use(express.json());
 app.use('/auth',AuthRoutes);
 app.use('/user',UserRoutes);
 app.get('/',(req:Request,res:Response,next:NextFunction) => {
