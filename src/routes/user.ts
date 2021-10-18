@@ -3,6 +3,6 @@ import { getDishes } from "../controllers/user";
 
 const router = express.Router();
 
-router.get('/getDishes',getDishes);
+router.get('/dishes',getDishes);
 
 export default router;

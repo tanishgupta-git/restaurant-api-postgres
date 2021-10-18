@@ -2,6 +2,7 @@ import { Request,Response,NextFunction } from 'express';
 import { poolDB } from '../db/connection';
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import CustomError from '../customTypes/errorType';
 
 interface resUType {
   email : String,
@@ -20,8 +21,8 @@ export const userSignup = async (req:Request,res:Response,next:NextFunction) => 
        'message' : `user added with ${user.rows[0].id}`
     });
    } catch (e) {
-     console.log(e);
-     res.json("Either the account alreay exist or try again later");
+    const error = new CustomError(500,'Either the user already exist or try again later');
+    return next(error); 
    }
 }
 
@@ -37,17 +38,15 @@ export const userLogin = async (req:Request,res:Response,next:NextFunction) => {
   // check if user find or not
   const user : resUType = result.rows[0];
   if (!user) {
-    res.json({
-      "message" : "User not found"
-    })
+    const error = new CustomError(403,'User not found');
+    return next(error);
   }
   loadedUser = user;
+  console.log("After the not found check")
   const isEqual = await bcrypt.compare(password, user.password);
   if (!isEqual) {
-
-      res.json({
-        "message" : "Wrong username or password"
-      })
+     const error = new CustomError(401,'email or password is incorrect');
+     return next(error);
   }
   const token = jwt.sign(
     {
@@ -60,8 +59,8 @@ export const userLogin = async (req:Request,res:Response,next:NextFunction) => {
  
   res.status(200).json({ token: token, userId: loadedUser.id.toString(),typeOfuser:"User"});
   } catch (err) {
-      console.log(err);
-      res.json("Error in login")
+    const error = new CustomError(500,'Server error');
+    return next(error); 
     }
   
 } 
@@ -79,17 +78,14 @@ export const adminLogin = async (req:Request,res:Response,next:NextFunction) => 
   const admin : resUType = result.rows[0];
   console.log(admin);
   if (!admin) {
-    res.json({
-      "message" : "Admin not found"
-    })
+    const error = new CustomError(403,'Admin not found');
+    return next(error);
   }
   loadedAdmin = admin;
   const isEqual = await bcrypt.compare(password, admin.password);
   if (!isEqual) {
-
-      res.json({
-        "message" : "Wrong username or password"
-      })
+    const error = new CustomError(401,'Email or password is incorrect');
+    return next(error); 
   }
   const token = jwt.sign(
     {
@@ -102,8 +98,8 @@ export const adminLogin = async (req:Request,res:Response,next:NextFunction) => 
  
   res.status(200).json({ token: token, userId: loadedAdmin.id,typeOfuser:"Admin"});
   } catch (err) {
-      console.log(err);
-      res.json("Error in login")
+    const error = new CustomError(500,'Server error');
+    return next(error); 
     }
   
 } 
@@ -111,10 +107,8 @@ export const adminLogin = async (req:Request,res:Response,next:NextFunction) => 
 // function for adding admin
 export const addAdmin = async (req:Request,res:Response,next:NextFunction) => {
    if(!req.isAdmin) {
-         res.json({
-           "message" : "Permission denied for adding admin"
-         })
-         return;
+    const error = new CustomError(401,'You are not authorizd as a admin');
+    return next(error);  
    }
    try {
     const password = req.body.password;
@@ -126,7 +120,7 @@ export const addAdmin = async (req:Request,res:Response,next:NextFunction) => {
        'message' : `admin added with ${user.rows[0].id}`
     });
    } catch (e) {
-     console.log(e);
-     res.json("Either the account alreay exist or try again later");
+    const error = new CustomError(500,'Either the admin already exist or try again later');
+    return next(error); 
    }
 }

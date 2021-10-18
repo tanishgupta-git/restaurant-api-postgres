@@ -2,10 +2,9 @@ import { Request,Response,NextFunction } from 'express';
 import { poolDB } from '../db/connection';
 
 export const getDishes = async (req:Request,res:Response,next:NextFunction) => {
-    let respon; 
    try 
      {
-     respon = await poolDB.query('SELECT * FROM dish')
+     let respon = await poolDB.query('SELECT * FROM dishes')
      res.json(respon.rows);
      }
      catch(e) {
