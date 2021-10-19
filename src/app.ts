@@ -10,7 +10,7 @@ app.use(express.json());
 app.use('/auth',AuthRoutes);
 app.use('/user',UserRoutes);
 app.get('/',(req:Request,res:Response,next:NextFunction) => {
-    res.send("Hello from CRM api");
+    res.send("Hello from restaurant api");
 })
 
 

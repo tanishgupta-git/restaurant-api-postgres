@@ -1,4 +1,6 @@
 -- this file is just for convenience of creating the tables locally
+
+-- commands for creating tables
 create table users (
 	id UUID NOT NULL PRIMARY KEY,
 	name VARCHAR(50) NOT NULL,
@@ -16,14 +18,9 @@ create table admins (
     password VARCHAR(200) NOT NULL
 );
 
-insert into dish (dish_uid,dish_name, category, imageUrl, price) values ('144ff676-093b-4173-8090-80f9ed313775','Basic Thali', 'Indian', 'https://i0.wp.com/post.healthline.com/wp-content/uploads/2020/07/thali-indian-1296x728-header.jpg', 500);
-insert into admins (id,name,username,email, password) values (uuid_generate_v4(),'wer', 'wert05', 'indain123@gmail.com', "123345");
-
-
-
 create table categories (
 	category_id UUID NOT NULL PRIMARY KEY,
-	name VARCHAR(100) NOT NULL,
+	name VARCHAR(100) NOT NULL UNIQUE
 );
 
 create table dishes (
@@ -35,3 +32,7 @@ create table dishes (
 	CONSTRAINT fk_categories FOREIGN KEY(category_id) REFERENCES categories(category_id) ON DELETE CASCADE
 );
 
+-- command for inserting demo data
+insert into dishes (id,name,category_id, imageUrl,price) values (uuid_generate_v4(),'Basic Thali', 'Indian', 'https://i0.wp.com/post.healthline.com/wp-content/uploads/2020/07/thali-indian-1296x728-header.jpg', 500);
+insert into admins (id,name,username,email, password) values (uuid_generate_v4(),'wer', 'wert05', 'indain123@gmail.com', "123345");
+insert into categories (category_id,name) values (uuid_generate_v4(),'Rajasthani');

@@ -1,7 +1,7 @@
-import express from "express";
+import express, { Router } from "express";
 import { getDishes } from "../controllers/user";
 
-const router = express.Router();
+const router : Router = express.Router();
 
 router.get('/dishes',getDishes);
 
