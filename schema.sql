@@ -33,6 +33,5 @@ create table dishes (
 );
 
 -- command for inserting demo data
-insert into dishes (id,name,category_id, imageUrl,price) values (uuid_generate_v4(),'Basic Thali', 'Indian', 'https://i0.wp.com/post.healthline.com/wp-content/uploads/2020/07/thali-indian-1296x728-header.jpg', 500);
 insert into admins (id,name,username,email, password) values (uuid_generate_v4(),'wer', 'wert05', 'indain123@gmail.com', "123345");
 insert into categories (category_id,name) values (uuid_generate_v4(),'Rajasthani');
