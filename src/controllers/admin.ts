@@ -4,7 +4,7 @@ import bcrypt from 'bcryptjs';
 import CustomError from '../customTypes/errorType';
 
 // function for adding admin
-export const addAdmin = async (req:Request,res:Response,next:NextFunction) => {
+export const newAdmin = async (req:Request,res:Response,next:NextFunction) => {
     if(!req.isAdmin) {
      const error = new CustomError(401,'You are not authorizd as a admin');
      return next(error);  
@@ -16,10 +16,73 @@ export const addAdmin = async (req:Request,res:Response,next:NextFunction) => {
  
      const user = await poolDB.query('INSERT INTO admins(id,name,username,email,password) VALUES (uuid_generate_v4(),$1,$2,$3,$4) RETURNING("id")',values);
      res.json({
-        'message' : `admin added with ${user.rows[0].id}`
+        'message' : `${req.body.name} admin added with ${user.rows[0].id}`
      });
     } catch (e) {
      const error = new CustomError(500,'Either the admin already exist or try again later');
      return next(error); 
     }
  }
+
+
+// function for adding dish
+export const addDish = async (req:Request,res:Response,next:NextFunction) => {
+   if(!req.isAdmin) {
+      const error = new CustomError(401,'You are not authorizd as a admin');
+      return next(error);  
+     }
+   try {
+      const values = [req.body.name,req.body.category_id,req.body.imageUrl,req.body.price];
+      const dish = await poolDB.query('INSERT INTO dishes(id,name,category_id,imageUrl,price) VALUES (uuid_generate_v4(),$1,$2,$3,$4) RETURNING("id")',values)
+      res.json({
+         'message' : `${req.body.name} dish added with ${dish.rows[0].id} id.`
+      });
+
+   } catch (e) {
+     const error = new CustomError(500,'Error while adding the dish');
+     return next(error); 
+    
+   }
+
+}
+
+// function for deleting dish
+export const deleteDish = async (req:Request,res:Response,next:NextFunction) => {
+   if(!req.isAdmin) {
+      const error = new CustomError(401,'You are not authorizd as a admin');
+      return next(error);  
+     }
+   try {
+      
+      await poolDB.query(`DELETE FROM dishes WHERE name = ${req.params.dishname}`)
+      res.json({
+         'message' : `${req.params.dishname} dish deleted.`
+      });
+   } catch (e) {
+     const error = new CustomError(500,'Error while deleting the dish');
+     return next(error); 
+   }
+
+}
+
+// function for updating the details of dish
+export const updateDish = async (req:Request,res:Response,next:NextFunction) => {
+   if(!req.isAdmin) {
+      const error = new CustomError(401,'You are not authorizd as a admin');
+      return next(error);  
+     } 
+
+     try {  
+      await poolDB.query(`UPDATE dishes SET name=${req.body.name},category_id=${req.body.category_id},imageUrl=${req.body.imageUrl},price=${req.body.price} WHERE id=${req.params.id}`)
+      res.json({
+         'message' : `${req.body.name} dish updated.`
+      });
+
+   } catch (e) {
+     const error = new CustomError(500,'Error while deleting the dish');
+     return next(error); 
+   }
+
+}
+
+// function for adding category

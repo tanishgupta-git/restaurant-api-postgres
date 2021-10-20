@@ -33,5 +33,7 @@ create table dishes (
 );
 
 -- command for inserting demo data
+
+
 insert into admins (id,name,username,email, password) values (uuid_generate_v4(),'wer', 'wert05', 'indain123@gmail.com', "123345");
 insert into categories (category_id,name) values (uuid_generate_v4(),'Rajasthani');

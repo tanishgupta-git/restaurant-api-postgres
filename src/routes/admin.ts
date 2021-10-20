@@ -1,8 +1,12 @@
 import express, { Router } from "express";
-import { addAdmin } from '../controllers/admin'
+import { newAdmin,addDish,deleteDish,updateDish } from '../controllers/admin'
 
 const router : Router = express.Router();
 
-router.post('/addnew',addAdmin);
+router.post('/newadmin',newAdmin);
+router.put('/dish',addDish);
+router.post('/dish/:id',updateDish);
+router.delete('/dish/:dishname',deleteDish);
+
 
 export default router;
