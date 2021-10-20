@@ -86,3 +86,41 @@ export const updateDish = async (req:Request,res:Response,next:NextFunction) => 
 }
 
 // function for adding category
+export const addCatgory = async (req:Request,res:Response,next:NextFunction) => {
+   if(!req.isAdmin) {
+      const error = new CustomError(401,'You are not authorizd as a admin');
+      return next(error);  
+     }
+   try {
+
+      const dish = await poolDB.query('INSERT INTO categories(category_id,name) VALUES (uuid_generate_v4(),$1) RETURNING("id")',[req.body.name])
+      res.json({
+         'message' : `${req.body.name} category added with ${dish.rows[0].id} id.`
+      });
+
+   } catch (e) {
+     const error = new CustomError(500,'Error while adding the category');
+     return next(error); 
+    
+   }
+
+}
+
+// function for de;leting the category
+export const deleteCategory = async (req:Request,res:Response,next:NextFunction) => {
+   if(!req.isAdmin) {
+      const error = new CustomError(401,'You are not authorizd as a admin');
+      return next(error);  
+     }
+   try {
+      
+      await poolDB.query(`DELETE FROM categories WHERE name = ${req.params.categoryname}`)
+      res.json({
+         'message' : `${req.params.categoryname} category deleted.`
+      });
+   } catch (e) {
+     const error = new CustomError(500,'Error while deleting the category');
+     return next(error); 
+   }
+
+}
