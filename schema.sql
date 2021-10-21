@@ -25,15 +25,32 @@ create table categories (
 
 create table dishes (
 	id UUID NOT NULL PRIMARY KEY,
-	name VARCHAR(100) NOT NULL,
+	name VARCHAR(100) NOT NULL UNIQUE,
 	category_id UUID NOT NULL,
 	imageUrl  VARCHAR(300) NOT NULL,
 	price NUMERIC(19, 2) NOT NULL CHECK (price > 0),
 	CONSTRAINT fk_categories FOREIGN KEY(category_id) REFERENCES categories(category_id) ON DELETE CASCADE
 );
 
+create table orders (
+	id UUID NOT NULL PRIMARY KEY,
+	user_id UUID NOT NULL,
+	totalprice NUMERIC(19, 2) NOT NULL CHECK (totalprice > 0),
+	completed BOOLEAN NOT NULL,
+	CONSTRAINT fk_users FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+)
+
+create table orderdishes (
+	id UUID NOT NULL PRIMARY KEY,
+	order_id UUID NOT NULL,
+	dish_id UUID NOT NULL, 
+    CONSTRAINT fk_orders FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE,
+	CONSTRAINT fk_dishes FOREIGN KEY(dish_id) REFERENCES dishes(id) ON DELETE CASCADE
+)
+
 -- command for inserting demo data
 
 
-insert into admins (id,name,username,email, password) values (uuid_generate_v4(),'wer', 'wert05', 'indain123@gmail.com', "123345");
+insert into admins (id,name,username,email, password) values (uuid_generate_v4(),'admin', 'admin123', 'admin123@gmail.com', '123345');
+insert into users (id, name, username, email, password, phone) values (uuid_generate_v4(),'test', 'test123', 'test123@gmail.com','123456','1234567890');
 insert into categories (category_id,name) values (uuid_generate_v4(),'Rajasthani');

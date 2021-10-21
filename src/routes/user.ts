@@ -1,8 +1,9 @@
 import express, { Router } from "express";
-import { getDishes } from "../controllers/user";
+import { getDishes,placeOrder } from "../controllers/user";
 
 const router : Router = express.Router();
 
 router.get('/dishes',getDishes);
+router.put('/order',placeOrder);
 
 export default router;

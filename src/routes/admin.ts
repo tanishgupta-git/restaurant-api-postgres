@@ -3,7 +3,7 @@ import { newAdmin,addDish,deleteDish,updateDish,addCatgory,deleteCategory } from
 
 const router : Router = express.Router();
 
-router.post('/newadmin',newAdmin);
+router.put('/newadmin',newAdmin);
 router.put('/dish',addDish);
 router.post('/dish/:id',updateDish);
 router.delete('/dish/:dishname',deleteDish);

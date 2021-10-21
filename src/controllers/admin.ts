@@ -54,7 +54,7 @@ export const deleteDish = async (req:Request,res:Response,next:NextFunction) => 
      }
    try {
       
-      await poolDB.query(`DELETE FROM dishes WHERE name = ${req.params.dishname}`)
+      await poolDB.query('DELETE FROM dishes WHERE name = $1',[req.params.dishname])
       res.json({
          'message' : `${req.params.dishname} dish deleted.`
       });
@@ -73,13 +73,14 @@ export const updateDish = async (req:Request,res:Response,next:NextFunction) => 
      } 
 
      try {  
-      await poolDB.query(`UPDATE dishes SET name=${req.body.name},category_id=${req.body.category_id},imageUrl=${req.body.imageUrl},price=${req.body.price} WHERE id=${req.params.id}`)
+      const values = [req.body.name,req.body.category_id,req.body.imageUrl,req.body.price,req.params.id];
+      await poolDB.query('UPDATE dishes SET name=$1, category_id=$2, imageUrl=$3, price=$4 WHERE id=$5',values)
       res.json({
          'message' : `${req.body.name} dish updated.`
       });
 
    } catch (e) {
-     const error = new CustomError(500,'Error while deleting the dish');
+     const error = new CustomError(500,'Error while updating the dish');
      return next(error); 
    }
 
@@ -93,12 +94,13 @@ export const addCatgory = async (req:Request,res:Response,next:NextFunction) => 
      }
    try {
 
-      const dish = await poolDB.query('INSERT INTO categories(category_id,name) VALUES (uuid_generate_v4(),$1) RETURNING("id")',[req.body.name])
+      const category = await poolDB.query('INSERT INTO categories(category_id,name) VALUES(uuid_generate_v4(),$1) RETURNING("category_id")',[req.body.name])
       res.json({
-         'message' : `${req.body.name} category added with ${dish.rows[0].id} id.`
+         'message' : `${req.body.name} category added with ${category.rows[0].category_id} id.`
       });
 
    } catch (e) {
+    console.log(e);
      const error = new CustomError(500,'Error while adding the category');
      return next(error); 
     
@@ -114,7 +116,7 @@ export const deleteCategory = async (req:Request,res:Response,next:NextFunction)
      }
    try {
       
-      await poolDB.query(`DELETE FROM categories WHERE name = ${req.params.categoryname}`)
+      await poolDB.query('DELETE FROM categories WHERE name=$1',[req.params.categoryname])
       res.json({
          'message' : `${req.params.categoryname} category deleted.`
       });
