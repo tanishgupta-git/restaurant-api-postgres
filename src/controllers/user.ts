@@ -15,13 +15,39 @@ export const getDishes = async (req:Request,res:Response,next:NextFunction) => {
        query = `SELECT * FROM dishes OFFSET ${page * 5} LIMIT 5`;
      }
      let respon = await poolDB.query(query)
-     res.json(respon.rows);
+     const total = await poolDB.query('SELECT count(*) FROM dishes');
+     res.json({
+       data : respon.rows,
+       total : total.rows
+     });
      }
      catch(e) {
       const error = new CustomError(500,'Error in getting dishes.');
       return next(error); 
      }
    
+}
+
+export const searchDishes = async (req:Request,res:Response,next:NextFunction) => {
+  try 
+    {
+   
+    const page : number = Number(req.query.page) || 0;
+    const searchQuery:string = req.query.name?.toString() || '';
+    const query:string = `SELECT * FROM dishes WHERE name ILIKE $1 OFFSET ${page * 5} LIMIT 5`; 
+    let respon = await poolDB.query(query,['%' + searchQuery + '%'])
+    const total = await poolDB.query('SELECT count(*) FROM dishes');
+    res.json({
+      data : respon.rows,
+      total : total.rows
+    });
+    }
+    catch(e) {
+    console.log(e);
+     const error = new CustomError(500,'Error in getting dishes.');
+     return next(error); 
+    }
+  
 }
 
 // funnction  for adding order by user

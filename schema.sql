@@ -1,7 +1,8 @@
 -- this file is just for convenience of creating the tables locally
 
 -- commands for creating tables
-create table users (
+
+create table users(
 	id UUID NOT NULL PRIMARY KEY,
 	name VARCHAR(50) NOT NULL,
 	username VARCHAR(50) NOT NULL UNIQUE,
@@ -29,7 +30,7 @@ create table dishes (
 	category_id UUID NOT NULL,
 	imageUrl  VARCHAR(300) NOT NULL,
 	price NUMERIC(19, 2) NOT NULL CHECK (price > 0),
-	CONSTRAINT fk_categories FOREIGN KEY(category_id) REFERENCES categories(category_id) ON DELETE CASCADE
+	CONSTRAINT fk_dishes_categories FOREIGN KEY(category_id) REFERENCES categories(category_id) ON DELETE CASCADE
 );
 
 create table orders (
@@ -37,17 +38,30 @@ create table orders (
 	user_id UUID NOT NULL,
 	totalprice NUMERIC(19, 2) NOT NULL CHECK (totalprice > 0),
 	completed BOOLEAN NOT NULL,
-	CONSTRAINT fk_users FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
+	CONSTRAINT fk_orders_users FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
 )
 
 create table orderdishes (
 	id UUID NOT NULL PRIMARY KEY,
 	order_id UUID NOT NULL,
 	dish_id UUID NOT NULL, 
-    CONSTRAINT fk_orders FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE,
-	CONSTRAINT fk_dishes FOREIGN KEY(dish_id) REFERENCES dishes(id) ON DELETE CASCADE
+    CONSTRAINT fk_orderdishes_orders FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE,
+	CONSTRAINT fk_orderdishes_dishes FOREIGN KEY(dish_id) REFERENCES dishes(id) ON DELETE CASCADE
 )
 
+create table carts {
+	id UUID NOT NULL PRIMARY KEY,
+	user_id UUID NOT NULL,
+	CONSTRAINT fk_carts_users FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE	
+}
+
+create table cartitems {
+    id UUID NOT NULL PRIMARY KEY,
+	cart_id UUID NOT NULL,
+	dish_id UUID NOT NULL, 
+	CONSTRAINT fk_cartitems_dishes FOREIGN KEY(dish_id) REFERENCES dishes(id) ON DELETE CASCADE,
+	CONSTRAINT fk_cartitems_carts FOREIGN KEY(cart_id) REFERENCES carts(id) ON DELETE CASCADE
+}
 -- command for inserting demo data
 
 

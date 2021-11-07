@@ -108,7 +108,7 @@ export const addCatgory = async (req:Request,res:Response,next:NextFunction) => 
 
 }
 
-// function for de;leting the category
+// function for deleting the category
 export const deleteCategory = async (req:Request,res:Response,next:NextFunction) => {
    if(!req.isAdmin) {
       const error = new CustomError(401,'You are not authorizd as a admin');
