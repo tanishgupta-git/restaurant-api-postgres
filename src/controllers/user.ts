@@ -52,15 +52,40 @@ export const searchDishes = async (req:Request,res:Response,next:NextFunction) =
   
 }
 
+// function for getting the items in cart
+export const getCart = async (req:Request,res:Response,next:NextFunction) => {
+  req.userid = '7ea1a641-abb5-4b3b-9a56-c90937c356f1';
+  try {
+
+     const cart = await poolDB.query('SELECT * FROM carts WHERE user_id = $1',[req.userid]);
+     const cartItemsIdsRow = await poolDB.query('SELECT * FROM cartitems WHERE cart_id = $1',[cart.rows[0].id]);
+     let dishes = [];
+     for (let i = 0; i < cartItemsIdsRow.rows.length ; i++){
+        const dishDetail = await poolDB.query('SELECT * FROM dishes WHERE id = $1',[cartItemsIdsRow.rows[i].dish_id]);
+        dishes.push({...dishDetail.rows[0],quantity:cartItemsIdsRow.rows[i].quantity}); 
+     }
+
+     res.json({
+       dishes : dishes
+     });
+    
+  } catch (e){
+    const error = new CustomError(500,'error in adding item to cart.');
+    return next(error); 
+  }
+
+}
+
 // function for adding items to the cart
 export const addToCart = async (req:Request,res:Response,next:NextFunction) => {
+  req.userid = '7ea1a641-abb5-4b3b-9a56-c90937c356f1';
   if (!req.userid) {
     const error = new CustomError(401,'Please log in to add item to cart');
     return next(error); 
   }
   try {
 
-     const cart = await poolDB.query('SELECT * FROM carts where user_id = $1',[req.userid]);
+     const cart = await poolDB.query('SELECT * FROM carts WHERE user_id = $1',[req.userid]);
      const orderDish:string = req.body.dish; 
      const quantityDish:number = req.body.quantity;
      // inserting the data of different dishes in an order
@@ -70,14 +95,55 @@ export const addToCart = async (req:Request,res:Response,next:NextFunction) => {
       'message' : 'Added To Cart' 
      });
     
-  } catch {
+  } catch (e){
     const error = new CustomError(500,'error in adding item to cart.');
     return next(error); 
   }
 
 }
 
+// function for removing the item in cart
+export const removeFromCart = async (req:Request,res:Response,next:NextFunction) => {
+  req.userid = '7ea1a641-abb5-4b3b-9a56-c90937c356f1';
+  try {
 
+    const cart = await poolDB.query('SELECT * FROM carts WHERE user_id = $1',[req.userid]);
+    const orderDish:string = req.body.dish; 
+    // inserting the data of different dishes in an order
+    await poolDB.query('DELETE FROM cartitems WHERE cart_id = $1 AND dish_id = $2',[cart.rows[0].id,orderDish]);
+
+    res.json({
+     'message' : 'Removed item from cart' 
+    });
+    
+  } catch {
+    const error = new CustomError(500,'error in clearing the cart.');
+    return next(error); 
+  }
+
+}
+
+
+// function for clearing the cart
+export const clearCart = async (req:Request,res:Response,next:NextFunction) => {
+  req.userid = '7ea1a641-abb5-4b3b-9a56-c90937c356f1';
+  try {
+
+     const cart = await poolDB.query('SELECT * FROM carts WHERE user_id = $1',[req.userid]);
+
+     // removing all the items that are present in cart
+     await poolDB.query('DELETE FROM cartitems WHERE cart_id = $1',[cart.rows[0].id]);
+
+     res.json({
+      'message' : 'Your cart is empty' 
+     });
+    
+  } catch {
+    const error = new CustomError(500,'error in clearing the cart.');
+    return next(error); 
+  }
+
+}
 
 // funnction  for adding order by user
 export const placeOrder = async (req:Request,res:Response,next:NextFunction) => {

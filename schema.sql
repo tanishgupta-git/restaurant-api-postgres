@@ -49,17 +49,17 @@ create table orderdishes (
 	CONSTRAINT fk_orderdishes_dishes FOREIGN KEY(dish_id) REFERENCES dishes(id) ON DELETE CASCADE
 )
 
-create table carts {
+create table carts (
 	id UUID NOT NULL PRIMARY KEY,
 	user_id UUID NOT NULL,
-	CONSTRAINT fk_carts_users FOREIGN KEY(user_id) REFERENCES user(id) ON DELETE CASCADE	
-}
+	CONSTRAINT fk_carts_users FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE	
+)
 
-create table cartitems {
+create table cartitems (
     id UUID NOT NULL PRIMARY KEY,
 	cart_id UUID NOT NULL,
 	dish_id UUID NOT NULL,
 	quantity NUMERIC(19, 2) NOT NULL, 
 	CONSTRAINT fk_cartitems_dishes FOREIGN KEY(dish_id) REFERENCES dishes(id) ON DELETE CASCADE,
 	CONSTRAINT fk_cartitems_carts FOREIGN KEY(cart_id) REFERENCES carts(id) ON DELETE CASCADE
-}
+)
