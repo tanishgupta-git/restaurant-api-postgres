@@ -16,10 +16,17 @@ export const userSignup = async (req:Request,res:Response,next:NextFunction) => 
     const password = req.body.password;
     const hashedPw = await bcrypt.hash(password, 12);
     const values = [req.body.name,req.body.username,req.body.email,hashedPw,req.body.phone]
+    
+    // inserting the user in users table
     const user = await poolDB.query('INSERT INTO users(id,name,username,email,password,phone) VALUES (uuid_generate_v4(),$1,$2,$3,$4,$5) RETURNING("id")',values);
+    
+    // making the cart of user
+    await poolDB.query('INSERT INTO carts(id,user_id) VALUES (uuid_generate_v4(),$1)',[user.rows[0].id]);
+    
     res.json({
        'message' : `user added with ${user.rows[0].id}`
     });
+
    } catch (e) {
     const error = new CustomError(500,'Either the user already exist or try again later');
     return next(error); 
