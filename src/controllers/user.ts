@@ -45,7 +45,6 @@ export const searchDishes = async (req:Request,res:Response,next:NextFunction) =
     });
     }
     catch(e) {
-    console.log(e);
      const error = new CustomError(500,'Error in getting dishes.');
      return next(error); 
     }
@@ -54,7 +53,7 @@ export const searchDishes = async (req:Request,res:Response,next:NextFunction) =
 
 // function for getting the items in cart
 export const getCart = async (req:Request,res:Response,next:NextFunction) => {
-  req.userid = '7ea1a641-abb5-4b3b-9a56-c90937c356f1';
+
   try {
 
      const cart = await poolDB.query('SELECT * FROM carts WHERE user_id = $1',[req.userid]);
@@ -78,7 +77,7 @@ export const getCart = async (req:Request,res:Response,next:NextFunction) => {
 
 // function for adding items to the cart
 export const addToCart = async (req:Request,res:Response,next:NextFunction) => {
-  req.userid = '7ea1a641-abb5-4b3b-9a56-c90937c356f1';
+
   if (!req.userid) {
     const error = new CustomError(401,'Please log in to add item to cart');
     return next(error); 
@@ -102,14 +101,37 @@ export const addToCart = async (req:Request,res:Response,next:NextFunction) => {
 
 }
 
+
+// function for updating the quantity of dish
+export const updateItemQuantity = async (req:Request,res:Response,next:NextFunction) => {
+
+  try {
+
+     const cart = await poolDB.query('SELECT * FROM carts WHERE user_id = $1',[req.userid]);
+     const orderDish:string = req.body.dish; 
+     const quantity:number = req.body.quantity;
+    // removing the item from cartitems table
+    await poolDB.query('UPDATE cartitems SET quantity = $3 WHERE cart_id = $1 AND dish_id = $2',[cart.rows[0].id,orderDish,quantity]);
+
+     res.json({
+      'message' : 'Update the quantity of dish' 
+     });
+    
+  } catch (e){
+    const error = new CustomError(500,'error in updating the quantity of item.');
+    return next(error); 
+  }
+
+}
+
 // function for removing the item in cart
 export const removeFromCart = async (req:Request,res:Response,next:NextFunction) => {
-  req.userid = '7ea1a641-abb5-4b3b-9a56-c90937c356f1';
+
   try {
 
     const cart = await poolDB.query('SELECT * FROM carts WHERE user_id = $1',[req.userid]);
     const orderDish:string = req.body.dish; 
-    // inserting the data of different dishes in an order
+    // removing the item from cartitems table
     await poolDB.query('DELETE FROM cartitems WHERE cart_id = $1 AND dish_id = $2',[cart.rows[0].id,orderDish]);
 
     res.json({
@@ -126,7 +148,7 @@ export const removeFromCart = async (req:Request,res:Response,next:NextFunction)
 
 // function for clearing the cart
 export const clearCart = async (req:Request,res:Response,next:NextFunction) => {
-  req.userid = '7ea1a641-abb5-4b3b-9a56-c90937c356f1';
+
   try {
 
      const cart = await poolDB.query('SELECT * FROM carts WHERE user_id = $1',[req.userid]);

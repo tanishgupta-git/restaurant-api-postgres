@@ -39,7 +39,7 @@ create table orders (
 	totalprice NUMERIC(19, 2) NOT NULL CHECK (totalprice > 0),
 	completed BOOLEAN NOT NULL,
 	CONSTRAINT fk_orders_users FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE
-)
+);
 
 create table orderdishes (
 	id UUID NOT NULL PRIMARY KEY,
@@ -47,13 +47,13 @@ create table orderdishes (
 	dish_id UUID NOT NULL, 
     CONSTRAINT fk_orderdishes_orders FOREIGN KEY(order_id) REFERENCES orders(id) ON DELETE CASCADE,
 	CONSTRAINT fk_orderdishes_dishes FOREIGN KEY(dish_id) REFERENCES dishes(id) ON DELETE CASCADE
-)
+);
 
 create table carts (
 	id UUID NOT NULL PRIMARY KEY,
 	user_id UUID NOT NULL,
 	CONSTRAINT fk_carts_users FOREIGN KEY(user_id) REFERENCES users(id) ON DELETE CASCADE	
-)
+);
 
 create table cartitems (
     id UUID NOT NULL PRIMARY KEY,
@@ -62,4 +62,4 @@ create table cartitems (
 	quantity NUMERIC(19, 2) NOT NULL, 
 	CONSTRAINT fk_cartitems_dishes FOREIGN KEY(dish_id) REFERENCES dishes(id) ON DELETE CASCADE,
 	CONSTRAINT fk_cartitems_carts FOREIGN KEY(cart_id) REFERENCES carts(id) ON DELETE CASCADE
-)
+);
