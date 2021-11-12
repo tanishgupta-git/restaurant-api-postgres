@@ -174,7 +174,7 @@ export const placeOrder = async (req:Request,res:Response,next:NextFunction) => 
       return next(error); 
     }
     try {
-       const values = [req.body.userid,req.body.totalprice,false];
+       const values = [req.userid,req.body.totalprice,false];
        const orderdishes : string[] = req.body.dishes; 
        let order = await poolDB.query('INSERT INTO orders(id,user_id,totalprice,completed) VALUES (uuid_generate_v4(),$1,$2,$3) RETURNING("id")',values)
        // inserting the data of different dishes in an order
@@ -189,5 +189,22 @@ export const placeOrder = async (req:Request,res:Response,next:NextFunction) => 
       const error = new CustomError(500,'error in placing order.');
       return next(error); 
     }
+
+}
+
+// function for cancelling the order
+export const cancelOrder = async (req:Request,res:Response,next:NextFunction) => {
+  try {
+    // deleting the order by id
+     await poolDB.query('DELETE FROM orders WHERE id = $1',[req.body.orderid]);
+
+     res.json({
+      'message' : `${req.body.orderid} is deleted.`
+   });
+    
+  } catch {
+    const error = new CustomError(500,'error in placing order.');
+    return next(error); 
+  }
 
 }
